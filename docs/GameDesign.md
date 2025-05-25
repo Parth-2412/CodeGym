@@ -106,10 +106,12 @@ If your bot steps on an opponent’s tile, it can:
 
 ### Chain-Terminating Tiles
   - Hidden on the map.
-  - Stepping on one immediately ends the current chain and disables the tile (it won't have any effect in the future)
+  - Laying a tile on one immediately ends the current chain and disables the tile (it won't have any effect in the future)
 ### Chain Amplifier Tiles
   - Visible from the start.
   - Starting a chain on one grants +L bonus points, where L is the final length of that chain.
+  - Laying a tile on one immediately ends the current chain and disables the tile (it won't have any effect in the future)
+
 ---
 
 ## A snapshot of the game as the engine sees it

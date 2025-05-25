@@ -3,15 +3,17 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from agents.bot import Bot
 import random
-class Agent1(Bot):
+
+class Agent(Bot):
+    def __init__(self):
+        super().__init__()
     def decide(self):
         cell = self.get_cell(*self.position)
         if cell == "U":
             return "INFO"
         elif cell == "U.1":
             return "DESTROY"
-        elif cell == "E":
-            self.place_tile(*self.position)
+        elif cell == "E" or cell == "A":
             return "LAY"
         else:
             original_posn = self.position
@@ -32,5 +34,5 @@ class Agent1(Bot):
             move = f"MOVE {valid_dir}"
             return move
         
-agent = Agent1()
+agent = Agent()
 agent.play()

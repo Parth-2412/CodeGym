@@ -18,7 +18,7 @@ class Bot:
         self.next = (1,1)
         self.active_chain = False
         self.place_tile(*self.position)
-        self.points = 0
+
         # Read amplifier data
         header = self.get_input()
         if header[0] == "AMPLIFIERS":
@@ -27,7 +27,6 @@ class Bot:
                 r, c = self.get_input()
                 self.set_cell(r,c,'A')
 
-        self.play()
 
     def set_cell(self,x : int,y : int, val : str):
         self.map.iat[x - 1, y - 1] = val
@@ -45,11 +44,11 @@ class Bot:
 
         result = self.search(fr"{self.next[0]}.{self.next[1]-1}")
         if self.active_chain and len(result) == 0:
-            raise Exception(self.show())
+            raise Exception(self.show() + "\n" + fr"{self.next[0]}.{self.next[1]-1}")
         if self.active_chain and not Bot.is_adjacent(self.position, result[0] ):
             self.terminate()
 
-        self.set_cell(x,y, f"{self.next[0]}.{self.next[1]}")
+        self.map.iat[x-1,y-1] = f"{self.next[0]}.{self.next[1]}"
         self.next = (self.next[0], self.next[1] + 1)
         self.active_chain = True
     
@@ -98,9 +97,12 @@ class Bot:
             instruction_type, *inp = self.get_input()
             if instruction_type == "GAMEOVER":
                 break
+            elif instruction_type == "TERMINATED":
+                self.terminate()
             elif instruction_type =="TURN":
                 move = self.decide()
                 self.send_message(move)
+                count = 0
                 while (inp := self.get_input())[0] != "TURNOVER":
                     instruction_type, *inp = inp
                     if instruction_type == "DESTROYED":
@@ -110,15 +112,18 @@ class Bot:
                             self.set_cell(r,c,"E")
                     elif instruction_type == "TILE":
                         self.set_cell(*self.position, 'U')
+                        count += 1
                     elif instruction_type == "EMPTY":
                         self.set_cell(*self.position, 'E')
                     elif instruction_type == "HINT":
                         i,= inp
                         self.set_cell(*self.position, f"U.{i}")
                     elif instruction_type == "FAILED":
-                        self.points -= 8
+                        pass 
                     elif instruction_type == "TERMINATED":
                         self.terminate()
+                if move == "LAY" and count == 0:
+                    self.place_tile(*self.position)
             elif instruction_type == "UPDATE":
                 update_type,x,y = inp
                 if update_type == "TILE":
@@ -130,3 +135,4 @@ class Bot:
                         self.terminate()
                     self.destroy_chain(chain)
                 
+            

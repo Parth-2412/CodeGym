@@ -185,7 +185,10 @@ class Game:
                 agent.send_message("TERMINATED")
         elif self.map.is_occupied_by_enemy(x,y,i) and cell.startswith("-"):
             self.map.mark_seen(x,y)
+            self.terminate(i)
             agent.send_message("TILE")
+            agent.send_message("TERMINATED")
+
         else:
             raise self.invalid_move(i)
     
