@@ -33,12 +33,13 @@ def main():
         info(f"Winner is Agent {winner.id}")
     except Exception as e:
         if dev:
-            print(e)
+        
             print(f"AGENT 1: {game.state[0].position[0]} {game.state[0].position[1]}")
             print(f"AGENT 2: {game.state[1].position[0]} {game.state[1].position[1]}")
             game.map.show()
             print(agent1.stderror())
             print(agent2.stderror())
+            raise e
         else:
             error(str(e))
         

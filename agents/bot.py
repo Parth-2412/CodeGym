@@ -15,9 +15,9 @@ class Bot:
         self.map = pd.DataFrame([["E"]*size  for _ in range(size)])
         self.position = tuple(self.get_input())
         self.used_teleports = set()
-        self.next = (1,1)
+        self.current_chain_index = 1
+        self.next_tile_index = 1
         self.active_chain = False
-        self.place_tile(*self.position)
 
         # Read amplifier data
         header = self.get_input()
@@ -26,6 +26,7 @@ class Bot:
             for _ in range(L):
                 r, c = self.get_input()
                 self.set_cell(r,c,'A')
+        self.place_tile(*self.position)
 
 
     def set_cell(self,x : int,y : int, val : str):
@@ -42,14 +43,12 @@ class Bot:
     
     def place_tile(self, x:int, y:int):
 
-        result = self.search(fr"{self.next[0]}.{self.next[1]-1}")
-        if self.active_chain and len(result) == 0:
-            raise Exception(self.show() + "\n" + fr"{self.next[0]}.{self.next[1]-1}")
-        if self.active_chain and not Bot.is_adjacent(self.position, result[0] ):
+        
+        if self.active_chain and not Bot.is_adjacent(self.position, self.search(fr"{self.current_chain_index}.{self.next_tile_index-1}")[0] ):
             self.terminate()
 
-        self.map.iat[x-1,y-1] = f"{self.next[0]}.{self.next[1]}"
-        self.next = (self.next[0], self.next[1] + 1)
+        self.set_cell(x,y,f"{self.current_chain_index}.{self.next_tile_index}")
+        self.next_tile_index += 1
         self.active_chain = True
     
     def __get_coords(self, matches : pd.DataFrame) -> list[tuple[int,int]]:
@@ -71,7 +70,8 @@ class Bot:
     
     def terminate(self):
         if self.active_chain:
-            self.next = (self.next[0] +1 , 1)
+            self.current_chain_index += 1
+            self.next_tile_index = 1
             self.active_chain = False
             return True
         return False
@@ -102,7 +102,6 @@ class Bot:
             elif instruction_type =="TURN":
                 move = self.decide()
                 self.send_message(move)
-                count = 0
                 while (inp := self.get_input())[0] != "TURNOVER":
                     instruction_type, *inp = inp
                     if instruction_type == "DESTROYED":
@@ -112,9 +111,10 @@ class Bot:
                             self.set_cell(r,c,"E")
                     elif instruction_type == "TILE":
                         self.set_cell(*self.position, 'U')
-                        count += 1
                     elif instruction_type == "EMPTY":
                         self.set_cell(*self.position, 'E')
+                    elif instruction_type == "LAID":
+                        self.place_tile(*self.position)
                     elif instruction_type == "HINT":
                         i,= inp
                         self.set_cell(*self.position, f"U.{i}")
@@ -122,8 +122,6 @@ class Bot:
                         pass 
                     elif instruction_type == "TERMINATED":
                         self.terminate()
-                if move == "LAY" and count == 0:
-                    self.place_tile(*self.position)
             elif instruction_type == "UPDATE":
                 update_type,x,y = inp
                 if update_type == "TILE":
@@ -131,7 +129,7 @@ class Bot:
                 elif update_type == "DESTROYED":
                     cell = self.get_cell(x,y)
                     chain = int(cell.split(".")[0])
-                    if chain == self.next[0]:
+                    if chain == self.current_chain_index:
                         self.terminate()
                     self.destroy_chain(chain)
                 

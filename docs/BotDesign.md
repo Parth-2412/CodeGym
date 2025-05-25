@@ -34,6 +34,7 @@
     - `EMPTY` if the new cell is empty
     - `TILE` if there is a tile placed by the enemy on that cell
       - In this case, if the bot has also added a `LAY` command after the above corresponding `MOVE` command, and the bot isn't already let known that the cell holds a tile, the `LAY` command is ignored
+  - If the bot successfully lays a tile , a `LAID` message is sent back
   - If while the bot has an active chain and it either, lands on an opponent's tile or tries to lay a tile on a chain terminating tile, it receives a `TERMINATED` message
   - On a valid `INFO` command, the engine replies with `HINT i`, i being the index of the tile in its chain
   - On a `DESTROY` command, the engine replies with

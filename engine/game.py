@@ -180,6 +180,7 @@ class Game:
             self.map.place_tile((x,y), info)
             self.state[i].next_tile_index += 1
             self.state[i].chain_active = True
+            agent.send_message("LAID")
             if cell == "T":
                 self.terminate(i)
                 agent.send_message("TERMINATED")
