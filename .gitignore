@@ -1,0 +1,6 @@
+__pycache__/
+*.numbers
+*.pdf
+.vscode/
+logs/
+maps/
