@@ -70,8 +70,8 @@ Every turn, a bot can either:
 If your bot steps on an opponent’s tile, it can:
 
 - `INFO`
-  - Gives some hint about the position of the tail relative to the tile the bot has used the commant on
-  - Hint is to be decided
+  - Gives a hint about the position of the tail relative to the tile the bot has used the commant on
+  - The hint is the index (1 based) of the tile in its chain
   - **Costs 4 points.**
 
 - `DESTROY`: Try to destroy the opponent’s whole chain.
